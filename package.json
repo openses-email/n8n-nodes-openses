@@ -1,0 +1,66 @@
+{
+	"name": "n8n-nodes-openses",
+	"version": "1.0.0",
+	"description": "Send email, manage contacts, sequences, suppressions and shared inboxes, and react to email events with OpenSES (open-source email on your own Amazon SES).",
+	"license": "MIT",
+	"homepage": "https://openses.email",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"openses",
+		"email",
+		"amazon-ses",
+		"transactional-email",
+		"inbox",
+		"webhook"
+	],
+	"author": {
+		"name": "OpenSES",
+		"email": "hello@openses.email",
+		"url": "https://openses.email"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/openses-email/n8n-nodes-openses.git"
+	},
+	"bugs": {
+		"url": "https://github.com/openses-email/n8n-nodes-openses/issues"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint && eslint . --max-warnings=0",
+		"lint:fix": "n8n-node lint --fix",
+		"test": "npm run build && node --test tests/*.test.cjs",
+		"prepublishOnly": "npm test && npm run review",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"review": "npm run format:check && npm run lint && node scripts/review.mjs"
+	},
+	"files": [
+		"dist",
+		"examples"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/OpenSesApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/OpenSes/OpenSes.node.js",
+			"dist/nodes/OpenSes/OpenSesTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "0.51.4",
+		"@n8n/scan-community-package": "0.38.0",
+		"@types/node": "22.19.15",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

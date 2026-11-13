@@ -1,0 +1,40 @@
+{
+	"name": "OpenSES: Slack alert on bounce or complaint",
+	"nodes": [
+		{
+			"parameters": {
+				"events": ["email.bounced", "email.complained"]
+			},
+			"id": "4d9e6f20-5c5c-4e3f-9c03-000000000001",
+			"name": "OpenSES Trigger",
+			"type": "n8n-nodes-openses.openSesTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"webhookId": "7e8f9a0b-1c2d-4e3f-8a4b-000000000003"
+		},
+		{
+			"parameters": {
+				"method": "POST",
+				"url": "https://hooks.slack.com/services/REPLACE/WITH/YOUR-WEBHOOK",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ JSON.stringify({ text: ($json.type === 'email.bounced' ? ':warning: Bounce' : ':rotating_light: Spam complaint') + ' for ' + [].concat($json.data.to).join(', ') + '\\nSubject: ' + $json.data.subject + '\\nFrom: ' + $json.data.from + ($json.data.detail ? '\\nDetail: ' + (typeof $json.data.detail === 'string' ? $json.data.detail : JSON.stringify($json.data.detail)) : '') }) }}",
+				"options": {}
+			},
+			"id": "4d9e6f20-5c5c-4e3f-9c03-000000000002",
+			"name": "Post to Slack",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [240, 0]
+		}
+	],
+	"connections": {
+		"OpenSES Trigger": {
+			"main": [[{ "node": "Post to Slack", "type": "main", "index": 0 }]]
+		}
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}

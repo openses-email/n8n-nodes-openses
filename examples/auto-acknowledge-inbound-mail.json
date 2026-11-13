@@ -1,0 +1,80 @@
+{
+	"name": "OpenSES: auto-acknowledge inbound mail",
+	"nodes": [
+		{
+			"parameters": {
+				"events": ["email.received"]
+			},
+			"id": "8b0f5d0e-1a1a-4c1e-9a01-000000000001",
+			"name": "OpenSES Trigger",
+			"type": "n8n-nodes-openses.openSesTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"webhookId": "5f2c8c1e-6c7b-4f0e-9d7a-000000000001"
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": {
+						"caseSensitive": false,
+						"leftValue": "",
+						"typeValidation": "loose"
+					},
+					"conditions": [
+						{
+							"id": "c1",
+							"leftValue": "={{ $json.data.from }}",
+							"rightValue": "no-reply",
+							"operator": {
+								"type": "string",
+								"operation": "notContains"
+							}
+						},
+						{
+							"id": "c2",
+							"leftValue": "={{ $json.data.from }}",
+							"rightValue": "noreply",
+							"operator": {
+								"type": "string",
+								"operation": "notContains"
+							}
+						}
+					],
+					"combinator": "and"
+				},
+				"options": {}
+			},
+			"id": "8b0f5d0e-1a1a-4c1e-9a01-000000000002",
+			"name": "Not an automated sender?",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2,
+			"position": [240, 0]
+		},
+		{
+			"parameters": {
+				"resource": "thread",
+				"operation": "reply",
+				"threadId": "={{ $json.data.thread_id }}",
+				"text": "=Hi {{ $json.data.from_name || 'there' }},\n\nThanks for your message about \"{{ $json.data.subject }}\". We have received it and will get back to you within one business day.\n\nBest regards",
+				"additionalFields": {}
+			},
+			"id": "8b0f5d0e-1a1a-4c1e-9a01-000000000003",
+			"name": "Reply in thread",
+			"type": "n8n-nodes-openses.openSes",
+			"typeVersion": 1,
+			"position": [480, -80]
+		}
+	],
+	"connections": {
+		"OpenSES Trigger": {
+			"main": [[{ "node": "Not an automated sender?", "type": "main", "index": 0 }]]
+		},
+		"Not an automated sender?": {
+			"main": [[{ "node": "Reply in thread", "type": "main", "index": 0 }], []]
+		}
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}

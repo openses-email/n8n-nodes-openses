@@ -1,0 +1,67 @@
+{
+	"name": "OpenSES: add a contact and enroll in a sequence",
+	"nodes": [
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "signup",
+				"options": {}
+			},
+			"id": "2a7c4e10-3b3b-4d2e-8b02-000000000001",
+			"name": "Signup webhook",
+			"type": "n8n-nodes-base.webhook",
+			"typeVersion": 2,
+			"position": [0, 0],
+			"webhookId": "9c1d2e3f-4a5b-4c6d-8e7f-000000000002"
+		},
+		{
+			"parameters": {
+				"resource": "contact",
+				"operation": "upsert",
+				"email": "={{ $json.body.email }}",
+				"additionalFields": {
+					"name": "={{ $json.body.name }}",
+					"properties": {
+						"values": [
+							{
+								"name": "plan",
+								"value": "={{ $json.body.plan || 'free' }}"
+							}
+						]
+					}
+				}
+			},
+			"id": "2a7c4e10-3b3b-4d2e-8b02-000000000002",
+			"name": "Create or update contact",
+			"type": "n8n-nodes-openses.openSes",
+			"typeVersion": 1,
+			"position": [240, 0]
+		},
+		{
+			"parameters": {
+				"resource": "sequence",
+				"operation": "enroll",
+				"sequenceId": "REPLACE_WITH_SEQUENCE_ID",
+				"identifyBy": "contactId",
+				"contactId": "={{ $json.id }}"
+			},
+			"id": "2a7c4e10-3b3b-4d2e-8b02-000000000003",
+			"name": "Enroll in onboarding sequence",
+			"type": "n8n-nodes-openses.openSes",
+			"typeVersion": 1,
+			"position": [480, 0]
+		}
+	],
+	"connections": {
+		"Signup webhook": {
+			"main": [[{ "node": "Create or update contact", "type": "main", "index": 0 }]]
+		},
+		"Create or update contact": {
+			"main": [[{ "node": "Enroll in onboarding sequence", "type": "main", "index": 0 }]]
+		}
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}
